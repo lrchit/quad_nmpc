@@ -1,0 +1,6 @@
+
+/build
+/control/nmpc/acados_python_demo/c_generated_code
+/control/nmpc/acados_python_demo/__pycache__
+/control/nmpc/acados_python_demo/srbd_acados_ocp.json
+/control/nmpc/acados_python_demo/srbd_acados_sim.json

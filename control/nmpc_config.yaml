@@ -1,0 +1,61 @@
+
+omniMode: false
+useWbc: true
+useBodyOpti: true
+useTimeStepOpti: false
+
+# if chaneg horizon and iterationBetweenMpc, 
+# you should change python code and nmpc code
+horizon: 51
+iterationBetweenMpc: 10
+
+iterationBetweenBodyOpti: 2
+
+mass: 12
+g: 9.81
+
+# body: pos vel rpy omegaWorld
+q1: 20
+q2: 20
+q3: 10
+q4: 1
+q5: 1
+q6: 1
+q7: 30
+q8: 30
+q9: 20
+q10: 0.1
+q11: 0.1
+q12: 1
+
+# foot: pos
+q13: 10
+q14: 10
+q15: 200
+
+# input
+r1: 1.0e-4
+r2: 1.0e-4
+r3: 1.0e-4
+
+# foot: vel
+r4: 1.0e-1
+r5: 1.0e-1
+r6: 4.0e-1
+
+# terminal
+alpha: 5
+
+# swing leg pos ctrl
+kp_cartesian_x: 500
+kp_cartesian_y: 500
+kp_cartesian_z: 200
+# swing leg pos ctrl
+kd_cartesian_x: 10
+kd_cartesian_y: 10
+kd_cartesian_z: 20
+
+# body_opti
+body_opti_x: 1
+body_opti_y: 1
+body_opti_z: 10

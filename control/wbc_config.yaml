@@ -1,0 +1,36 @@
+
+kp_joint_abad: 5
+kp_joint_hip: 5
+kp_joint_knee: 5
+
+kd_joint_abad: 3
+kd_joint_hip: 0.5
+kd_joint_knee: 0.5
+
+
+kp_body_ori_x: 100
+kp_body_ori_y: 100
+kp_body_ori_z: 100
+
+kd_body_ori_x: 10
+kd_body_ori_y: 10
+kd_body_ori_z: 10
+
+kp_body_pos_x: 100
+kp_body_pos_y: 100
+kp_body_pos_z: 100
+
+kd_body_pos_x: 10
+kd_body_pos_y: 10
+kd_body_pos_z: 10
+
+kp_foot_x: 5000
+kp_foot_y: 5000
+kp_foot_z: 5000
+
+kd_foot_x: 1
+kd_foot_y: 1
+kd_foot_z: 1
+
+weight_floating: 1
+weight_reaction_force: 0.1

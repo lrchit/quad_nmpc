@@ -1,0 +1,38 @@
+<mujoco model="a1 scene">
+
+    <worldbody>
+        <geom name="stairs_1" size="2.4 2 0.06" pos="4 0 0.0" type="box"/>
+    </worldbody>
+    <worldbody>
+        <geom name="stairs_2" size="2.2 2 0.06" pos="4 0 0.06" type="box"/>
+    </worldbody>
+    <worldbody>
+        <geom name="stairs_3" size="2.0 2 0.06" pos="4 0 0.12" type="box"/>
+    </worldbody>
+    <worldbody>
+        <geom name="stairs_4" size="1.8 2 0.06" pos="4 0 0.18" type="box"/>
+    </worldbody>
+    <worldbody>
+        <geom name="stairs_5" size="1.6 2 0.06" pos="4 0 0.24" type="box"/>
+    </worldbody>
+    <worldbody>
+        <geom name="stairs_6" size="1.4 2 0.06" pos="4 0 0.30" type="box"/>
+    </worldbody>
+    <worldbody>
+        <geom name="stairs_7" size="1.2 2 0.06" pos="4 0 0.36" type="box"/>
+    </worldbody>
+    <worldbody>
+        <geom name="stairs_8" size="1.0 2 0.06" pos="4 0 0.42" type="box"/>
+    </worldbody>
+    <worldbody>
+        <geom name="stairs_9" size="0.8 2 0.06" pos="4 0 0.48" type="box"/>
+    </worldbody>
+
+    <!-- <worldbody>
+        <body name="box_1" pos="8 0 0.4" >
+            <geom size="0.2 0.2 0.2" type="box"/>
+            <inertial mass="0.5" pos="0.1 0.1 0.1" diaginertia="0.000807752 0.00055293 0.000468983" />
+        </body>
+    </worldbody> -->
+
+</mujoco>
