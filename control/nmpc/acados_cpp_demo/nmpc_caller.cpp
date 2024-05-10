@@ -256,7 +256,8 @@ void QuadNmpc::nmpcUpdate(const VectorXd &currentState,
     for (int k = 0; k < 4; k++) {
       reference[24 + 3 * k + 0] = 0;
       reference[24 + 3 * k + 1] = 0;
-      reference[24 + 3 * k + 2] = gaitTable[k + 4 * j] * grfAverage;
+      // reference[24 + 3 * k + 2] = gaitTable[k + 4 * j] * grfAverage;
+      reference[24 + 3 * k + 2] = 0;
     }
     for (int k = 0; k < 4; ++k) {
       reference[36 + 3 * k + 0] = 0;
