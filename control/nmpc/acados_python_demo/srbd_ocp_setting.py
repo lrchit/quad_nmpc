@@ -25,11 +25,7 @@ def safe_mkdir_recursive(directory, overwrite=False):
 
 class SRBD_Optimizer(object):
 
-    def __init__(self,
-                 model,
-                 t_horizon,
-                 n_nodes,
-                 solverMode="multiple shooting"):
+    def __init__(self, model, t_horizon, n_nodes, solverMode="explicit"):
 
         self.T = t_horizon
         self.N = n_nodes
@@ -56,18 +52,16 @@ class SRBD_Optimizer(object):
 
         ocp.solver_options.tf = self.T
         sim.solver_options.T = self.T / self.N
-        if (solverMode == "multiple shooting"):
+        if (solverMode == "explicit"):
             ocp.solver_options.integrator_type = "ERK"
             sim.solver_options.integrator_type = "ERK"
-        elif (solverMode == "collocation"):
+        elif (solverMode == "implicit"):
             ocp.solver_options.integrator_type = "IRK"
             ocp.solver_options.collocation_type = "GAUSS_LEGENDRE"
             sim.solver_options.integrator_type = "IRK"
             sim.solver_options.collocation_type = "GAUSS_LEGENDRE"
         else:
-            print(
-                "ERROR: 'solverMode' should be 'multiple shooting' or 'collocation'"
-            )
+            print("ERROR: 'solverMode' should be 'explicit' or 'implicit'")
             exit()
 
         ocp.model = model.model
@@ -130,6 +124,10 @@ class SRBD_Optimizer(object):
         ocp.solver_options.nlp_solver_tol_eq = 1e-6
         ocp.solver_options.nlp_solver_tol_ineq = 1e-6
         ocp.solver_options.nlp_solver_tol_comp = 1e-6
+
+        # # use ddp solver
+        # ocp.translate_to_feasibility_problem(True, False)
+        # ocp.solver_options.nlp_solver_type = "DDP"
 
         # generate ocp solver
         ocp.code_export_directory = "c_generated_code"

@@ -85,6 +85,16 @@ file(GLOB ocp_solver
         control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_ext_cost_fun_jac_hess.c
         control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_ext_cost_fun_jac.c
         control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_ext_cost_fun.c
+
+        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_0_fun_jac_ut_xt.c
+        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_0_fun.c
+        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_0_hess.c
+        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_e_fun_jac_ut_xt.c
+        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_e_fun.c
+        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_e_hess.c
+        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_fun_jac_ut_xt.c
+        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_fun.c
+        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_hess.c
         )
 
 add_library(ocp_shared_lib SHARED ${ocp_solver})
