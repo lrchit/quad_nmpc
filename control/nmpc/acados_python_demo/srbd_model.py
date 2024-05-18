@@ -164,7 +164,12 @@ class SRBD_Model(object):
             self.stateVars[23], self.controlVars[0:24]) -
                ca.vertcat(self.stateReference, self.controlReference))
 
-        return err.T @ W @ err + self.controlVars[24] * self.controlVars[24]
+        slackPenalize = self.controlVars[24] * self.controlVars[24]
+        for i in range(4):
+            slackPenalize += (self.controlVars[i * 3 + 2] *
+                              (self.stateVars[i * 3 + 12 + 2] - 0.005))**2
+
+        return err.T @ W @ err + slackPenalize
 
     def cost_e(self, ):
         Q_e = self.getTerminalCostMatrix()

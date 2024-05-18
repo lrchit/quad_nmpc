@@ -17,7 +17,7 @@ g: 9.81
 # body: pos vel rpy omegaWorld
 q1: 20
 q2: 20
-q3: 10
+q3: 40
 q4: 1
 q5: 1
 q6: 1
@@ -31,7 +31,7 @@ q12: 1
 # foot: pos
 q13: 10
 q14: 10
-q15: 200
+q15: 500
 
 # input
 r1: 1.0e-4
