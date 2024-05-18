@@ -191,11 +191,11 @@ class SRBD_Model(object):
 
             # complementary
             constraints[i * 8 + 6] = (self.controlVars[i * 3 + 2] *
-                                      (self.stateVars[i * 3 + 12 + 2]) -
-                                      0.005) - self.controlVars[24]
+                                      (self.stateVars[i * 3 + 12 + 2] -
+                                       0.005)) - self.controlVars[24]
             constraints[i * 8 + 7] = (self.controlVars[i * 3 + 2] *
-                                      (self.stateVars[i * 3 + 12 + 2]) -
-                                      0.005) + self.controlVars[24]
+                                      (self.stateVars[i * 3 + 12 + 2] -
+                                       0.005)) + self.controlVars[24]
         constraints[32] = self.controlVars[24]
 
         return constraints
@@ -216,11 +216,11 @@ class SRBD_Model(object):
 
             # complementary
             constraints_0[i * 7 + 5] = (self.controlVars[i * 3 + 2] *
-                                        (self.stateVars[i * 3 + 12 + 2]) -
-                                        0.005) - self.controlVars[24]
+                                        (self.stateVars[i * 3 + 12 + 2] -
+                                         0.005)) - self.controlVars[24]
             constraints_0[i * 7 + 6] = (self.controlVars[i * 3 + 2] *
-                                        (self.stateVars[i * 3 + 12 + 2]) -
-                                        0.005) + self.controlVars[24]
+                                        (self.stateVars[i * 3 + 12 + 2] -
+                                         0.005)) + self.controlVars[24]
 
         constraints_0[28] = self.controlVars[24]
 

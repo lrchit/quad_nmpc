@@ -157,7 +157,7 @@ void QuadNmpc::nmpcUpdate(const VectorXd &currentState,
       }
       // slack variable
       lh[28] = 0;
-      uh[28] = 10000;
+      uh[28] = 1;
 
       ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, i, "lh", lh);
       ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, i, "uh", uh);
@@ -194,7 +194,7 @@ void QuadNmpc::nmpcUpdate(const VectorXd &currentState,
       }
       // slack varible
       lh[32] = 0;
-      uh[32] = 10000;
+      uh[32] = 1;
 
       ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, i, "lh", lh);
       ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, i, "uh", uh);
