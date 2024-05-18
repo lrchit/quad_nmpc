@@ -250,7 +250,7 @@ void QuadNmpc::getSolution(VectorXd &optimalState, VectorXd &optimalControl) {
   } else {
     // get the optimized solution
     double optimalStateArray[24];
-    double optimalControlArray[24];
+    double optimalControlArray[25];
 
     for (int i = 0; i < horizons; i++) {
       ocp_nlp_out_get(nlp_config, nlp_dims, nlp_out, i, "x", optimalStateArray);
@@ -258,7 +258,7 @@ void QuadNmpc::getSolution(VectorXd &optimalState, VectorXd &optimalControl) {
                       optimalControlArray);
 
       copyArray2Eigen(lastOptimalState, optimalStateArray, 24, i * 24, 0);
-      copyArray2Eigen(lastOptimalControl, optimalControlArray, 24, i * 24, 0);
+      copyArray2Eigen(lastOptimalControl, optimalControlArray, 25, i * 25, 0);
     }
     ocp_nlp_out_get(nlp_config, nlp_dims, nlp_out, horizons, "x",
                     optimalStateArray);
