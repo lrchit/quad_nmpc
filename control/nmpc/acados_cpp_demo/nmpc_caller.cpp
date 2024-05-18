@@ -128,105 +128,73 @@ void QuadNmpc::nmpcUpdate(const VectorXd &currentState,
   // ---constraints ---
   for (int i = 0; i < horizons + 1; i++) {
     if (i == 0) { // constraint_0
-      double lh[32], uh[32];
+      double lh[29], uh[29];
       for (int j = 0; j < 4; j++) {
-        // friction and foot vel
+        // friction cone
+        lh[7 * j + 0] = -10000;
+        lh[7 * j + 1] = -10000;
+        lh[7 * j + 2] = 0;
+        lh[7 * j + 3] = 0;
+
+        uh[7 * j + 0] = 0;
+        uh[7 * j + 1] = 0;
+        uh[7 * j + 2] = 10000;
+        uh[7 * j + 3] = 10000;
+
+        // z-axis force limit
         if (gaitTable[i * 4 + j] == 0) {
-          lh[8 * j + 0] = 0;
-          lh[8 * j + 1] = 0;
-          lh[8 * j + 2] = 0;
-          lh[8 * j + 3] = 0;
-          lh[8 * j + 4] = 0;
-
-          uh[8 * j + 0] = 0;
-          uh[8 * j + 1] = 0;
-          uh[8 * j + 2] = 0;
-          uh[8 * j + 3] = 0;
-          uh[8 * j + 4] = 0;
-
-          lh[8 * j + 5] = -10000;
-          lh[8 * j + 6] = -10000;
-          lh[8 * j + 7] = -10000;
-
-          uh[8 * j + 5] = 10000;
-          uh[8 * j + 6] = 10000;
-          uh[8 * j + 7] = 10000;
+          lh[7 * j + 4] = 0;
+          uh[7 * j + 4] = 0;
         } else {
-          lh[8 * j + 0] = -10000;
-          lh[8 * j + 1] = -10000;
-          lh[8 * j + 2] = 0;
-          lh[8 * j + 3] = 0;
-          lh[8 * j + 4] = 0;
-
-          uh[8 * j + 0] = 0;
-          uh[8 * j + 1] = 0;
-          uh[8 * j + 2] = 10000;
-          uh[8 * j + 3] = 10000;
-          uh[8 * j + 4] = 200;
-
-          lh[8 * j + 5] = 0;
-          lh[8 * j + 6] = 0;
-          lh[8 * j + 7] = 0;
-
-          uh[8 * j + 5] = 0;
-          uh[8 * j + 6] = 0;
-          uh[8 * j + 7] = 0;
+          lh[7 * j + 4] = 0;
+          uh[7 * j + 4] = 200;
         }
+        // complementary
+        lh[7 * j + 5] = -10000;
+        uh[7 * j + 5] = 0;
+        lh[7 * j + 6] = 0;
+        uh[7 * j + 6] = 10000;
       }
+      // slack variable
+      lh[28] = 0;
+      uh[28] = 10000;
 
       ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, i, "lh", lh);
       ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, i, "uh", uh);
     } else if (i < horizons + 1) { // constraint
-      double lh[36], uh[36];
+      double lh[33], uh[33];
       for (int j = 0; j < 4; j++) {
         // z-axis pos of foot
-        lh[9 * j + 0] = 0.005;
-        uh[9 * j + 0] = 0.3;
-        // friction
+        lh[8 * j + 0] = 0.005;
+        uh[8 * j + 0] = 0.3;
+        // friction cone
+        lh[8 * j + 1] = -10000;
+        lh[8 * j + 2] = -10000;
+        lh[8 * j + 3] = 0;
+        lh[8 * j + 4] = 0;
+
+        uh[8 * j + 1] = 0;
+        uh[8 * j + 2] = 0;
+        uh[8 * j + 3] = 10000;
+        uh[8 * j + 4] = 10000;
+
+        // z-axis force limit
         if (gaitTable[i * 4 + j] == 0) {
-          lh[9 * j + 1] = 0;
-          lh[9 * j + 2] = 0;
-          lh[9 * j + 3] = 0;
-          lh[9 * j + 4] = 0;
-          lh[9 * j + 5] = 0;
-
-          uh[9 * j + 1] = 0;
-          uh[9 * j + 2] = 0;
-          uh[9 * j + 3] = 0;
-          uh[9 * j + 4] = 0;
-          uh[9 * j + 5] = 0;
+          lh[8 * j + 5] = 0;
+          uh[8 * j + 5] = 0;
         } else {
-          lh[9 * j + 1] = -10000;
-          lh[9 * j + 2] = -10000;
-          lh[9 * j + 3] = 0;
-          lh[9 * j + 4] = 0;
-          lh[9 * j + 5] = 0;
-
-          uh[9 * j + 1] = 0;
-          uh[9 * j + 2] = 0;
-          uh[9 * j + 3] = 10000;
-          uh[9 * j + 4] = 10000;
-          uh[9 * j + 5] = 200;
+          lh[8 * j + 5] = 0;
+          uh[8 * j + 5] = 200;
         }
-        // foot vel vel
-        if (gaitTable[i * 4 + j] == 0) {
-          lh[9 * j + 6] = -10000;
-          lh[9 * j + 7] = -10000;
-          lh[9 * j + 8] = -10000;
-
-          uh[9 * j + 6] = 10000;
-          uh[9 * j + 7] = 10000;
-          uh[9 * j + 8] = 10000;
-        } else {
-          lh[9 * j + 6] = 0;
-          lh[9 * j + 7] = 0;
-          lh[9 * j + 8] = 0;
-
-          uh[9 * j + 6] = 0;
-          uh[9 * j + 7] = 0;
-          uh[9 * j + 8] = 0;
-        }
+        // complementary
+        lh[8 * j + 6] = -10000;
+        uh[8 * j + 6] = 0;
+        lh[8 * j + 7] = 0;
+        uh[8 * j + 7] = 10000;
       }
+      // slack varible
+      lh[32] = 0;
+      uh[32] = 10000;
 
       ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, i, "lh", lh);
       ocp_nlp_constraints_model_set(nlp_config, nlp_dims, nlp_in, i, "uh", uh);
@@ -300,6 +268,7 @@ void QuadNmpc::getSolution(VectorXd &optimalState, VectorXd &optimalControl) {
     optimalControl = lastOptimalControl;
   }
   // std::cout << "control = \n"
-  //           << optimalControl.head(12).transpose() << std::endl;
-  // std::cout << "state = \n" << optimalState.transpose() << std::endl;
+  //           << optimalControl.head(25).transpose() << std::endl;
+  // std::cout << "state = \n"
+  //           << optimalState.segment(12, 12).transpose() << std::endl;
 }

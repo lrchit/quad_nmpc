@@ -83,7 +83,7 @@ class SRBD_Model(object):
 
         stateVars = ca.SX.sym("stateVars", 24)
         stateVarsDot = ca.SX.sym("stateVarsDot", 24)
-        controlVars = ca.SX.sym("controlVars", 24)
+        controlVars = ca.SX.sym("controlVars", 25)
 
         weight = ca.SX.sym("weight", 22)
         stateReference = ca.SX.sym("stateReference", 24)
@@ -112,11 +112,11 @@ class SRBD_Model(object):
         self.model = model
 
         constraintBounds = ca.types.SimpleNamespace()
-        constraintBounds.lower_bound = np.zeros(36)
-        constraintBounds.upper_bound = np.zeros(36)
+        constraintBounds.lower_bound = np.zeros(33)
+        constraintBounds.upper_bound = np.zeros(33)
         constraintBounds_0 = ca.types.SimpleNamespace()
-        constraintBounds_0.lower_bound = np.zeros(32)
-        constraintBounds_0.upper_bound = np.zeros(32)
+        constraintBounds_0.lower_bound = np.zeros(29)
+        constraintBounds_0.upper_bound = np.zeros(29)
         constraintBounds_e = ca.types.SimpleNamespace()
         constraintBounds_e.lower_bound = np.zeros(24)
         constraintBounds_e.upper_bound = np.zeros(24)
@@ -161,10 +161,10 @@ class SRBD_Model(object):
             self.stateVars[14], self.stateVars[15:17] - self.stateVars[0:2],
             self.stateVars[17], self.stateVars[18:20] - self.stateVars[0:2],
             self.stateVars[20], self.stateVars[21:23] - self.stateVars[0:2],
-            self.stateVars[23], self.controlVars) -
+            self.stateVars[23], self.controlVars[0:24]) -
                ca.vertcat(self.stateReference, self.controlReference))
 
-        return err.T @ W @ err
+        return err.T @ W @ err + self.controlVars[24] * self.controlVars[24]
 
     def cost_e(self, ):
         Q_e = self.getTerminalCostMatrix()
@@ -174,44 +174,55 @@ class SRBD_Model(object):
 
     def constraints(self, ):
         mu = 0.4
-        constraints = ca.SX.sym("constraints", 36)
+        constraints = ca.SX.sym("constraints", 33)
         for i in range(4):
             # foot ZPos
-            constraints[i * 9 + 0] = self.stateVars[i * 3 + 12 + 2]
+            constraints[i * 8 + 0] = self.stateVars[i * 3 + 12 + 2]
             # friction
-            constraints[i * 9 + 1] = (self.controlVars[i * 3 + 0] -
+            constraints[i * 8 + 1] = (self.controlVars[i * 3 + 0] -
                                       mu * self.controlVars[i * 3 + 2])
-            constraints[i * 9 + 2] = (self.controlVars[i * 3 + 1] -
+            constraints[i * 8 + 2] = (self.controlVars[i * 3 + 1] -
                                       mu * self.controlVars[i * 3 + 2])
-            constraints[i * 9 + 3] = (self.controlVars[i * 3 + 0] +
+            constraints[i * 8 + 3] = (self.controlVars[i * 3 + 0] +
                                       mu * self.controlVars[i * 3 + 2])
-            constraints[i * 9 + 4] = (self.controlVars[i * 3 + 1] +
+            constraints[i * 8 + 4] = (self.controlVars[i * 3 + 1] +
                                       mu * self.controlVars[i * 3 + 2])
-            constraints[i * 9 + 5] = self.controlVars[i * 3 + 2]
-            # foot vel
-            constraints[i * 9 + 6] = self.controlVars[i * 3 + 12 + 0]
-            constraints[i * 9 + 7] = self.controlVars[i * 3 + 12 + 1]
-            constraints[i * 9 + 8] = self.controlVars[i * 3 + 12 + 2]
+            constraints[i * 8 + 5] = self.controlVars[i * 3 + 2]
+
+            # complementary
+            constraints[i * 8 + 6] = (self.controlVars[i * 3 + 2] *
+                                      (self.stateVars[i * 3 + 12 + 2]) -
+                                      0.005) - self.controlVars[24]
+            constraints[i * 8 + 7] = (self.controlVars[i * 3 + 2] *
+                                      (self.stateVars[i * 3 + 12 + 2]) -
+                                      0.005) + self.controlVars[24]
+        constraints[32] = self.controlVars[24]
 
         return constraints
 
     def constraints_0(self, ):
         mu = 0.4
-        constraints_0 = ca.SX.sym("constraints_0", 32)
+        constraints_0 = ca.SX.sym("constraints_0", 29)
         for i in range(4):
-            constraints_0[i * 8 + 0] = (self.controlVars[i * 3 + 0] -
+            constraints_0[i * 7 + 0] = (self.controlVars[i * 3 + 0] -
                                         mu * self.controlVars[i * 3 + 2])
-            constraints_0[i * 8 + 1] = (self.controlVars[i * 3 + 1] -
+            constraints_0[i * 7 + 1] = (self.controlVars[i * 3 + 1] -
                                         mu * self.controlVars[i * 3 + 2])
-            constraints_0[i * 8 + 2] = (self.controlVars[i * 3 + 0] +
+            constraints_0[i * 7 + 2] = (self.controlVars[i * 3 + 0] +
                                         mu * self.controlVars[i * 3 + 2])
-            constraints_0[i * 8 + 3] = (self.controlVars[i * 3 + 1] +
+            constraints_0[i * 7 + 3] = (self.controlVars[i * 3 + 1] +
                                         mu * self.controlVars[i * 3 + 2])
-            constraints_0[i * 8 + 4] = self.controlVars[i * 3 + 2]
-            # foot vel
-            constraints_0[i * 8 + 5] = self.controlVars[i * 3 + 12 + 0]
-            constraints_0[i * 8 + 6] = self.controlVars[i * 3 + 12 + 1]
-            constraints_0[i * 8 + 7] = self.controlVars[i * 3 + 12 + 2]
+            constraints_0[i * 7 + 4] = self.controlVars[i * 3 + 2]
+
+            # complementary
+            constraints_0[i * 7 + 5] = (self.controlVars[i * 3 + 2] *
+                                        (self.stateVars[i * 3 + 12 + 2]) -
+                                        0.005) - self.controlVars[24]
+            constraints_0[i * 7 + 6] = (self.controlVars[i * 3 + 2] *
+                                        (self.stateVars[i * 3 + 12 + 2]) -
+                                        0.005) + self.controlVars[24]
+
+        constraints_0[28] = self.controlVars[24]
 
         return constraints_0
 
