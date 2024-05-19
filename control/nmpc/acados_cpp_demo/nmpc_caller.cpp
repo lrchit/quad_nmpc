@@ -144,7 +144,7 @@ void QuadNmpc::nmpcUpdate(const VectorXd &currentState,
         // z-axis force limit
         if (gaitTable[i * 4 + j] == 0) {
           lh[7 * j + 4] = 0;
-          uh[7 * j + 4] = 200;
+          uh[7 * j + 4] = 0;
         } else {
           lh[7 * j + 4] = 0;
           uh[7 * j + 4] = 200;
@@ -181,7 +181,7 @@ void QuadNmpc::nmpcUpdate(const VectorXd &currentState,
         // z-axis force limit
         if (gaitTable[i * 4 + j] == 0) {
           lh[8 * j + 5] = 0;
-          uh[8 * j + 5] = 200;
+          uh[8 * j + 5] = 0;
         } else {
           lh[8 * j + 5] = 0;
           uh[8 * j + 5] = 200;

@@ -183,7 +183,7 @@ class SRBD_Model(object):
         for i in range(4):
             # foot ZPos
             constraints[i * 8 + 0] = self.stateVars[i * 3 + 12 + 2]
-            # friction
+            # friction cone
             constraints[i * 8 + 1] = (self.controlVars[i * 3 + 0] -
                                       mu * self.controlVars[i * 3 + 2])
             constraints[i * 8 + 2] = (self.controlVars[i * 3 + 1] -
@@ -209,6 +209,7 @@ class SRBD_Model(object):
         mu = 0.4
         constraints_0 = ca.SX.sym("constraints_0", 29)
         for i in range(4):
+            # friction cone
             constraints_0[i * 7 + 0] = (self.controlVars[i * 3 + 0] -
                                         mu * self.controlVars[i * 3 + 2])
             constraints_0[i * 7 + 1] = (self.controlVars[i * 3 + 1] -
@@ -226,7 +227,6 @@ class SRBD_Model(object):
             constraints_0[i * 7 + 6] = (self.controlVars[i * 3 + 2] *
                                         (self.stateVars[i * 3 + 12 + 2] -
                                          0.005)) + self.controlVars[24]
-
         constraints_0[28] = self.controlVars[24]
 
         return constraints_0

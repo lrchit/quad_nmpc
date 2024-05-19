@@ -25,7 +25,12 @@ def safe_mkdir_recursive(directory, overwrite=False):
 
 class SRBD_Optimizer(object):
 
-    def __init__(self, model, t_horizon, n_nodes, solverMode="explicit"):
+    def __init__(self,
+                 model,
+                 t_horizon,
+                 n_nodes,
+                 solverMode="explicit",
+                 generateCode=False):
 
         self.T = t_horizon
         self.N = n_nodes
@@ -129,13 +134,6 @@ class SRBD_Optimizer(object):
         # ocp.translate_to_feasibility_problem(True, False)
         # ocp.solver_options.nlp_solver_type = "DDP"
 
-        # generate ocp solver
-        ocp.code_export_directory = "c_generated_code"
-        json_file = os.path.join("./" + model.model.name + "_acados_ocp.json")
-        self.solver = AcadosOcpSolver(
-            ocp,
-            json_file=json_file)  # build=False, generate=False, verbose=False)
-
         # set model
         sim.model = model.model
 
@@ -153,8 +151,19 @@ class SRBD_Optimizer(object):
         sim.solver_options.sim_method_num_stages = 4
         sim.solver_options.ext_fun_compile_flags = "-O3"
 
+        # generate ocp solver and simulator
+        ocp.code_export_directory = "c_generated_code"
+        json_file = os.path.join("./" + model.model.name + "_acados_ocp.json")
+        self.solver = AcadosOcpSolver(ocp,
+                                      json_file=json_file,
+                                      build=generateCode,
+                                      generate=generateCode,
+                                      verbose=generateCode)
+
         # generate simulator
         json_file = os.path.join("./" + model.model.name + "_acados_sim.json")
-        self.integrator = AcadosSimSolver(
-            sim,
-            json_file=json_file)  # generate=False, build=False, verbose=False)
+        self.integrator = AcadosSimSolver(sim,
+                                          json_file=json_file,
+                                          generate=generateCode,
+                                          build=generateCode,
+                                          verbose=generateCode)
