@@ -154,6 +154,7 @@ class SRBD_Optimizer(object):
         sim.solver_options.ext_fun_compile_flags = "-O3"
 
         # generate simulator
+        sim.code_export_directory = "c_generated_code"
         json_file = os.path.join("./" + model.model.name + "_acados_sim.json")
         self.integrator = AcadosSimSolver(
             sim,

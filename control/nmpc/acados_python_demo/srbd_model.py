@@ -168,7 +168,12 @@ class SRBD_Model(object):
 
     def cost_e(self, ):
         Q_e = self.getTerminalCostMatrix()
-        err = self.stateVars - self.stateReference
+        err = ca.vertcat(
+            self.stateVars[0:12], self.stateVars[12:14] - self.stateVars[0:2],
+            self.stateVars[14], self.stateVars[15:17] - self.stateVars[0:2],
+            self.stateVars[17], self.stateVars[18:20] - self.stateVars[0:2],
+            self.stateVars[20], self.stateVars[21:23] - self.stateVars[0:2],
+            self.stateVars[23]) - self.stateReference
 
         return err.T @ Q_e @ err
 
