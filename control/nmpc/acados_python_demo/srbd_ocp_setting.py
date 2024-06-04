@@ -51,7 +51,7 @@ class SRBD_Optimizer(object):
         sim.acados_lib_path = acados_source_path + '/lib'
 
         ocp.solver_options.tf = self.T
-        sim.solver_options.T = self.T / self.N
+        sim.solver_options.T = 0.002
         if (solverMode == "explicit"):
             ocp.solver_options.integrator_type = "ERK"
             sim.solver_options.integrator_type = "ERK"

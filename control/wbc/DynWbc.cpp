@@ -290,36 +290,21 @@ void DynWbc::_SolveQP() {
   Eigen::SparseMatrix<double> Hessian_sparse;
   Hessian_sparse = _Hessian.sparseView();
 
-  if (!qp_solver.isInitialized()) {
-    qp_solver.settings()->setVerbosity(false);
-    qp_solver.settings()->setWarmStart(false);
-    qp_solver.data()->setNumberOfVariables(_dyn_CE.cols());
-    qp_solver.data()->setNumberOfConstraints(_dyn_CE.rows() + _dyn_CI.rows());
-    qp_solver.data()->setLinearConstraintsMatrix(linear_constraints_sparse);
-    qp_solver.data()->setHessianMatrix(Hessian_sparse);
-    qp_solver.data()->setGradient(_gradient);
-    qp_solver.data()->setLowerBound(lower_bound);
-    qp_solver.data()->setUpperBound(upper_bound);
-    qp_solver.initSolver();
-  } else {
-    // qp_solver.clearSolver();
-    qp_solver.settings()->setVerbosity(false);
-    qp_solver.settings()->setWarmStart(true);
+  qp_solver.clearSolver();
+  qp_solver.settings()->setVerbosity(false);
+  qp_solver.settings()->setWarmStart(false);
+  qp_solver.data()->setNumberOfVariables(_dyn_CE.cols());
+  qp_solver.data()->setNumberOfConstraints(_dyn_CE.rows() + _dyn_CI.rows());
 
-    qp_solver.data()->setNumberOfVariables(_dyn_CE.cols());
-    qp_solver.data()->setNumberOfConstraints(_dyn_CE.rows() + _dyn_CI.rows());
+  qp_solver.data()->clearLinearConstraintsMatrix();
+  qp_solver.data()->clearHessianMatrix();
+  qp_solver.data()->setLinearConstraintsMatrix(linear_constraints_sparse);
+  qp_solver.data()->setHessianMatrix(Hessian_sparse);
+  qp_solver.data()->setGradient(_gradient);
+  qp_solver.data()->setLowerBound(lower_bound);
+  qp_solver.data()->setUpperBound(upper_bound);
+  qp_solver.initSolver();
 
-    qp_solver.data()->clearHessianMatrix();
-    qp_solver.data()->clearLinearConstraintsMatrix();
-
-    qp_solver.data()->setLinearConstraintsMatrix(linear_constraints_sparse);
-    qp_solver.data()->setHessianMatrix(Hessian_sparse);
-
-    qp_solver.data()->setLowerBound(lower_bound);
-    qp_solver.data()->setUpperBound(upper_bound);
-
-    // qp_solver.initSolver();
-  }
   qp_solver.solveProblem();
 
   // Vec18 temp1;

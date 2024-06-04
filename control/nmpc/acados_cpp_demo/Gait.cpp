@@ -117,7 +117,8 @@ int *OffsetDurationGait::getMpcTable() {
 
   // printf("MPC table:\n");
   for (int i = 0; i < _nIterations; i++) {
-    int iter = (i + _iteration + 1) % _nIterations;
+    // int iter = (i + _iteration + 1) % _nIterations;
+    int iter = (i + _iteration) % _nIterations;
     Array4i progress = iter - _offsets;
     for (int j = 0; j < 4; j++) {
       if (progress[j] < 0)

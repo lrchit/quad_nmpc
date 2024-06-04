@@ -12,7 +12,7 @@
         <light castshadow="false" diffuse="1 1 1"/>
         <motor ctrlrange="-33.5 33.5" ctrllimited="true"/>
         <camera fovy="60"/>
-        <joint damping="0.01" armature="0.01" frictionloss="0.2" />
+        <joint damping="1" armature="0.01" frictionloss="0.2" />
     
     </default>
 

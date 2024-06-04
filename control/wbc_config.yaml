@@ -32,5 +32,5 @@ kd_foot_x: 1
 kd_foot_y: 1
 kd_foot_z: 1
 
-weight_floating: 1
-weight_reaction_force: 0.1
+weight_floating: 0.1
+weight_reaction_force: 1.0
