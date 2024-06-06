@@ -241,7 +241,7 @@ class SRBD_Model(object):
 
         # switch to global inertia
         inertia = self.rotMat @ inertia @ self.rotMat.T
-        inertia_inv = self.rotMat.T @ inertia_inv @ self.rotMat
+        inertia_inv = self.rotMat @ inertia_inv @ self.rotMat.T
 
         tau = (ca.cross(ca.vertcat(stateVars[12:15] - stateVars[0:3]),
                         controlVars[0:3], -1) +
