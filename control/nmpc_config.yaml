@@ -31,7 +31,7 @@ q12: 1
 # foot: pos
 q13: 10
 q14: 10
-q15: 200
+q15: 100
 
 # input
 r1: 1.0e-4
@@ -41,7 +41,7 @@ r3: 1.0e-4
 # foot: vel
 r4: 1.0e-1
 r5: 1.0e-1
-r6: 4.0e-1
+r6: 1.0e-2
 
 # terminal
 alpha: 5

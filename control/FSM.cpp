@@ -172,8 +172,8 @@ void QuadFSM::updateNmpc() {
 
   // --- phase table ---
   for (int i = 0; i < horizon; ++i) {
-    currentGait->setIterations(
-        iterationBetweenMpc, iterationCounter + i * iterationBetweenMpc);
+    currentGait->setIterations(iterationBetweenMpc,
+                               iterationCounter + i * iterationBetweenMpc);
     phaseTable.col(i) = currentGait->getSwingState();
   }
 
