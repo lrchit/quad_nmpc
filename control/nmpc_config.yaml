@@ -1,8 +1,6 @@
 
 omniMode: false
 useWbc: true
-useBodyOpti: true
-useTimeStepOpti: false
 
 # if chaneg horizon and iterationBetweenMpc, 
 # you should change python code and nmpc code

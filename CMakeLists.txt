@@ -39,7 +39,6 @@ include_directories(
     estimate
     utils
     control
-    control/body_optimize
     control/wbc 
     control/wbc/TaskContact 
     control/nmpc/acados_cpp_demo
@@ -53,59 +52,11 @@ include_directories(control/nmpc/acados_python_demo/c_generated_code)
 
 link_directories($ENV{ACADOS_SOURCE_DIR}/lib)
 
-file(GLOB ocp_solver
-        control/nmpc/acados_python_demo/c_generated_code/acados_solver_srbd.c
-        control/nmpc/acados_python_demo/c_generated_code/acados_sim_solver_srbd.c
-
-        control/nmpc/acados_python_demo/c_generated_code/srbd_constraints/srbd_constr_h_0_fun_jac_uxt_zt.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_constraints/srbd_constr_h_0_fun.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_constraints/srbd_constr_h_e_fun_jac_uxt_zt.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_constraints/srbd_constr_h_e_fun.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_constraints/srbd_constr_h_fun_jac_uxt_zt.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_constraints/srbd_constr_h_fun.c
-
-        control/nmpc/acados_python_demo/c_generated_code/srbd_model/srbd_impl_dae_fun_jac_x_xdot_u_z.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_model/srbd_impl_dae_fun_jac_x_xdot_u.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_model/srbd_impl_dae_fun_jac_x_xdot_z.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_model/srbd_impl_dae_fun.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_model/srbd_impl_dae_jac_x_xdot_u_z.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_model/srbd_expl_vde_adj.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_model/srbd_expl_ode_fun.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_model/srbd_expl_vde_forw.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_model/srbd_dyn_disc_phi_fun_jac_hess.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_model/srbd_dyn_disc_phi_fun_jac.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_model/srbd_dyn_disc_phi_fun.c
-
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_ext_cost_0_fun_jac_hess.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_ext_cost_0_fun_jac.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_ext_cost_0_fun.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_ext_cost_e_fun_jac_hess.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_ext_cost_e_fun_jac.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_ext_cost_e_fun.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_ext_cost_fun_jac_hess.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_ext_cost_fun_jac.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_ext_cost_fun.c
-
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_0_fun_jac_ut_xt.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_0_fun.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_0_hess.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_e_fun_jac_ut_xt.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_e_fun.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_e_hess.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_fun_jac_ut_xt.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_fun.c
-        control/nmpc/acados_python_demo/c_generated_code/srbd_cost/srbd_cost_y_hess.c
-        )
-
-add_library(ocp_shared_lib SHARED ${ocp_solver})
-target_link_libraries(ocp_shared_lib acados hpipm blasfeo)
-
 aux_source_directory(application APP_SRC)
 aux_source_directory(simulate SIM_SRC)
 aux_source_directory(estimate ESTM_SRC)
 aux_source_directory(utils UTILS_SRC)
 aux_source_directory(control CONTROL_SRC)
-aux_source_directory(control/body_optimize BODY_OPTI_SRC)
 aux_source_directory(control/wbc WBC_SRC)
 aux_source_directory(control/wbc/TaskContact WBC_TASK_CONTACT_SRC)
 aux_source_directory(control/nmpc/acados_cpp_demo NMPC_SRC)
@@ -118,7 +69,6 @@ add_executable(main main.cpp
                     ${WBC_SRC}
                     ${WBC_TASK_CONTACT_SRC}
                     ${CONTROL_SRC}
-                    ${BODY_OPTI_SRC}
                     ${NMPC_SRC}
 )
 
@@ -129,6 +79,10 @@ target_link_libraries(main
     OsqpEigen::OsqpEigen
     pinocchio
     yaml-cpp::yaml-cpp
-    ocp_shared_lib
+    acados
+    hpipm 
+    blasfeo
+    ${CMAKE_SOURCE_DIR}/control/nmpc/acados_python_demo/c_generated_code/libacados_ocp_solver_srbd.so
+    ${CMAKE_SOURCE_DIR}/control/nmpc/acados_python_demo/c_generated_code/libacados_sim_solver_srbd.so
 )
 

@@ -16,14 +16,10 @@ QuadFSM::QuadFSM() {
   YAML::Node config = YAML::LoadFile("../control/nmpc_config.yaml");
 
   horizon = config["horizon"].as<int>();
+  gaitHorizon = (horizon + 1) / 2;
   iterationBetweenMpc = config["iterationBetweenMpc"].as<int>();
-  iterationBetweenBodyOpti = config["iterationBetweenBodyOpti"].as<int>();
 
   useWbc = config["useWbc"].as<bool>();
-
-  weightX = config["body_opti_x"].as<double>();
-  weightY = config["body_opti_y"].as<double>();
-  weightZ = config["body_opti_z"].as<double>();
 
   // legKin.resize(4);
   legKin.push_back(LegKinematics("../unitree_a1_desc/urdf/FR.urdf"));
@@ -46,15 +42,13 @@ QuadFSM::QuadFSM() {
   footForceFromKin.setZero();
 
   trotting = new OffsetDurationGait(
-      (horizon + 1) / 2,
-      Vector<int, 4>(0, 0.5 * (horizon + 1) / 2, 0.5 * (horizon + 1) / 2, 0),
-      Vector<int, 4>(0.5 * (horizon + 1) / 2, 0.5 * (horizon + 1) / 2,
-                     0.5 * (horizon + 1) / 2, 0.5 * (horizon + 1) / 2),
+      gaitHorizon, Vector<int, 4>(0, 0.5 * gaitHorizon, 0.5 * gaitHorizon, 0),
+      Vector<int, 4>(0.5 * gaitHorizon, 0.5 * gaitHorizon, 0.5 * gaitHorizon,
+                     0.5 * gaitHorizon),
       "Trotting");
   standing = new OffsetDurationGait(
-      (horizon + 1) / 2, Vector<int, 4>(0, 0, 0, 0),
-      Vector<int, 4>((horizon + 1) / 2, (horizon + 1) / 2, (horizon + 1) / 2,
-                     (horizon + 1) / 2),
+      gaitHorizon, Vector<int, 4>(0, 0, 0, 0),
+      Vector<int, 4>(gaitHorizon, gaitHorizon, gaitHorizon, gaitHorizon),
       "Standing");
 
   currentGait = standing;
@@ -64,15 +58,11 @@ QuadFSM::QuadFSM() {
   gaitIterationCounter = 0;
   nmpcUpdateNeeded = false;
   wbcUpdateNeeded = false;
-  bodyOptiNeeded = false;
 
   estimater = new QuadEstm(legKin);
   wbcCaller = new QuadWbc();
-  bodyOptimizer = new QuadBodyOpti();
   nmpcCaller = new QuadNmpc();
   nmpcIntegrator = new QuadNmpcInterpolator();
-
-  bodyOptimizer->setBodyOptiWeight(weightX, weightY, weightZ);
 
   currentState.resize(24);
   desiredComState.resize(12);
@@ -155,18 +145,18 @@ void QuadFSM::updateNmpc() {
   int *mpcTable;
   currentGait->setIterations(iterationBetweenMpc, iterationCounter);
   mpcTable = currentGait->getMpcTable();
-  for (int i = 0; i < (horizon + 1) / 2; ++i) {
+  for (int i = 0; i < gaitHorizon; ++i) {
     for (int j = 0; j < 4; ++j) {
       gaitTable[4 * i + j] = mpcTable[4 * i + j];
     }
   }
   currentGait->setIterations(iterationBetweenMpc,
                              iterationCounter +
-                                 iterationBetweenMpc * (horizon + 1) / 2);
+                                 iterationBetweenMpc * gaitHorizon);
   mpcTable = currentGait->getMpcTable();
-  for (int i = 0; i < (horizon + 1) / 2; ++i) {
+  for (int i = 0; i < gaitHorizon; ++i) {
     for (int j = 0; j < 4; ++j) {
-      gaitTable[4 * (horizon + 1) / 2 + 4 * i + j] = mpcTable[4 * i + j];
+      gaitTable[4 * gaitHorizon + 4 * i + j] = mpcTable[4 * i + j];
     }
   }
 
@@ -179,11 +169,12 @@ void QuadFSM::updateNmpc() {
 
   // --- desired foot pos and vel ---
   double zPosDefault = 0.005;
-  double swingHeight = 0.05;
+  double swingHeight = 0.08;
   double zVelLift = 0.0;
   double zVelDown = 0.0;
-  auto cubicSpine = [zPosDefault, swingHeight, zVelLift,
-                     zVelDown](double phase) {
+  double swingPeriod = dt * iterationBetweenMpc * gaitHorizon / 2;
+  auto cubicSpine = [zPosDefault, swingHeight, zVelLift, zVelDown,
+                     swingPeriod](double phase) {
     double a, b, c, d, x0, x1, v0, v1, T, t;
     T = 1;
     if (phase < 0.5) {
@@ -206,8 +197,8 @@ void QuadFSM::updateNmpc() {
     d = x0;
     return a * t * t * t + b * t * t + c * t + d;
   };
-  auto cubicSpineFirstDerivate = [zPosDefault, swingHeight, zVelLift,
-                                  zVelDown](double phase) {
+  auto cubicSpineFirstDerivate = [zPosDefault, swingHeight, zVelLift, zVelDown,
+                                  swingPeriod](double phase) {
     double a, b, c, d, x0, x1, v0, v1, T, t;
     T = 1;
     if (phase < 0.5) {
@@ -227,10 +218,10 @@ void QuadFSM::updateNmpc() {
     a = (2 * x0 - 2 * x1 + v0 * T + v1 * T) / T / T / T;
     b = (-3 * x0 + 3 * x1 - 2 * v0 * T - v1 * T) / T / T;
     c = v0;
-    return 3 * a * t * t + 2 * b * t + c;
+    return (3 * a * t * t + 2 * b * t + c) / (swingPeriod / 2);
   };
-  auto cubicBezier = [zPosDefault, swingHeight, zVelLift,
-                      zVelDown](double phase) {
+  auto cubicBezier = [zPosDefault, swingHeight, zVelLift, zVelDown,
+                      swingPeriod](double phase) {
     double ZPos;
     if (phase < 0.5) {
       phase = 2 * phase;
@@ -242,15 +233,15 @@ void QuadFSM::updateNmpc() {
     }
     return ZPos;
   };
-  auto cubicBezierFirstDerivate = [zPosDefault, swingHeight, zVelLift,
-                                   zVelDown](double phase) {
+  auto cubicBezierFirstDerivate = [zPosDefault, swingHeight, zVelLift, zVelDown,
+                                   swingPeriod](double phase) {
     double ZVel;
     if (phase < 0.5) {
       phase = 2 * phase;
-      ZVel = 6 * phase * (1 - phase) * swingHeight;
+      ZVel = 6 * phase * (1 - phase) * swingHeight / (swingPeriod / 2);
     } else {
       phase = 2 * phase - 1;
-      ZVel = 6 * phase * (1 - phase) * (-swingHeight);
+      ZVel = 6 * phase * (1 - phase) * (-swingHeight) / (swingPeriod / 2);
     }
     return ZVel;
   };
@@ -395,24 +386,6 @@ void QuadFSM::computeJointTorque() {
         (footForceFromKin.col(i) -
          stateCur.rotMat * stateCur.grfRef.segment(3 * i, 3));
   }
-}
-
-void QuadFSM::bodyOptimize() {
-  bodyOptiNeeded = false;
-
-  // body_optimization
-  Matrix<double, 6, 1> current_state;
-  current_state << stateCur.rpy(0), stateCur.rpy(1), stateCur.rpy(2),
-      stateCur.pos(0), stateCur.pos(1), stateCur.pos(2);
-  bodyOptimizer->optiSolution(current_state, footHoldDes);
-
-  Eigen::Matrix<double, 5, 1> obj;
-  obj = bodyOptimizer->get_opt_obj();
-  // std::cout << "obj = " << obj.transpose() << std::endl;
-  double filter = 0.1;
-  trajIntegrate(0) = trajIntegrate(0) * (1 - filter) + obj(0) * filter;
-  trajIntegrate(1) = trajIntegrate(1) * (1 - filter) + obj(1) * filter;
-  trajIntegrate(5) = trajIntegrate(5) * (1 - filter) + obj(4) * filter;
 }
 
 Matrix<double, 12, 1> QuadFSM::getJointTorque() { return stateCur.jointTorque; }

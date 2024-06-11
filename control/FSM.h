@@ -4,7 +4,6 @@
 #pragma once
 #include "Gait.h"
 
-#include "body_optimization.h"
 #include "estimate.h"
 #include "kinematics.h"
 
@@ -27,12 +26,10 @@ public:
   void mainProgram();
   void computeNmpc();
   void computeWbc();
-  void bodyOptimize();
   void stateEstimate(double *sensordata);
   Matrix<double, 12, 1> getJointTorque();
 
   bool useWbc;
-  bool bodyOptiNeeded;
   bool nmpcUpdateNeeded;
   bool wbcUpdateNeeded;
 
@@ -47,7 +44,6 @@ private:
   // stateEstimate，mpc，wbc，body_opti
   QuadEstm *estimater;
   QuadWbc *wbcCaller;
-  QuadBodyOpti *bodyOptimizer;
   QuadNmpc *nmpcCaller;
   QuadNmpcInterpolator *nmpcIntegrator;
 
@@ -63,13 +59,13 @@ private:
   double dtmpc;
   int horizon;
   int iterationBetweenMpc;
-  int iterationBetweenBodyOpti;
 
   // for body_opti
   Matrix<double, 12, 1> footHoldDes;
   double weightX, weightY, weightZ;
 
   // gait
+  int gaitHorizon;
   Gait *gait, *currentGait;
   OffsetDurationGait *trotting, *standing, *flying, *bounding, *trot_climbing;
   int iterationCounter;

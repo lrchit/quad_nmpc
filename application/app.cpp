@@ -280,31 +280,6 @@ void NMpcLoop(mj::Simulate &sim) {
   }
 }
 
-void BodyOptiLoop(mj::Simulate &sim) {
-  while (!sim.exitrequest.load()) {
-    if (!sim.uiloadrequest.load()) {
-      // std::chrono::time_point<std::chrono::system_clock> t_start =
-      //     std::chrono::system_clock::now();
-
-      {
-        if (QuadApp::instance()->FSM.bodyOptiNeeded) {
-
-          QuadApp::instance()->FSM.bodyOptimize();
-
-          // std::chrono::time_point<std::chrono::system_clock> t_end =
-          //     std::chrono::system_clock::now();
-          // double time_record =
-          //     std::chrono::duration_cast<std::chrono::milliseconds>(t_end -
-          //                                                           t_start)
-          //         .count();
-          // std::cout << "body_opti_time: " << time_record / 1000 << "\n";
-        } else
-          std::this_thread::sleep_for(std::chrono::milliseconds(2));
-      }
-    }
-  }
-}
-
 void MainLoop(mj::Simulate &sim) {
   while (!sim.exitrequest.load()) {
     if (!sim.uiloadrequest.load()) {

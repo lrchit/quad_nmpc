@@ -50,8 +50,6 @@ private:
   double mass;
   double g;
 
-  bool useTimeStepOpti;
-
   Vector4d Xshoulder;
   Vector4d Yshoulder;
 
